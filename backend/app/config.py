@@ -30,6 +30,14 @@ class Settings(BaseSettings):
     auth_local_jwks_file: Path | None = None
     auth_local_issuer: str = "http://localhost/dev-issuer/"
 
+    # Storage. "memory" is for tests and quick local hacking; data is lost on
+    # restart. "dynamodb" is what runs in AWS, and locally against DynamoDB
+    # Local when DYNAMODB_ENDPOINT_URL is set (see docker-compose.yml).
+    store_backend: Literal["memory", "dynamodb"] = "memory"
+    dynamodb_table: str = "fantasy-survivor"
+    dynamodb_endpoint_url: str | None = None
+    aws_region: str = "us-east-1"
+
     @property
     def auth0_issuer(self) -> str:
         return f"https://{self.auth0_domain}/"

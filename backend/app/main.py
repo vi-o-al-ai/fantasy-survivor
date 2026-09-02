@@ -13,6 +13,7 @@ from app.auth import build_verifier
 from app.config import Settings, get_settings
 from app.logging import configure_logging
 from app.routers import health, me
+from app.storage.factory import build_store
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +38,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     app.state.token_verifier = build_verifier(settings)
+    app.state.store = build_store(settings)
 
     app.include_router(health.router)
     app.include_router(me.router)

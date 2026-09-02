@@ -17,7 +17,7 @@ unchecked phase, do only that phase, tick it, stop.
 - [x] **3. Auth0 on the backend.** JWT verification against the Auth0 JWKS,
   `get_current_user` dependency, `GET /me`, tests using a locally generated
   RSA key pair (no Auth0 account needed in CI).
-- [ ] **4. Domain and storage.** Models for season, contestant, episode,
+- [x] **4. Domain and storage.** Models for season, contestant, episode,
   episode stats, and user roster. Repository interface with in-memory and
   DynamoDB implementations. Scoring service with unit tests.
 - [ ] **5. API endpoints.** Contestants, episode stat entry, user picks,
@@ -45,3 +45,6 @@ unchecked phase, do only that phase, tick it, stop.
   deprecates `httpx`). Coverage gate set at 90%. Root `Makefile` added.
 - Phase 3 done. Verified locally: minted token → `/me` returns claims,
   missing token → 401, unconfigured auth → 503. Only RS256 accepted.
+- Phase 4 done. Store contract tests run against memory and DynamoDB
+  (moto). Docker Compose + `make db db-create` for DynamoDB Local.
+  Deferred: conditional writes, GSIs, per-season scoring overrides.

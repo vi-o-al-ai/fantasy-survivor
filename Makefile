@@ -19,4 +19,14 @@ backend-check: ## Lint, type-check, and test the backend
 backend-fix: ## Auto-fix lint and formatting
 	cd backend && .venv/bin/ruff check --fix . && .venv/bin/ruff format .
 
-.PHONY: help backend-setup backend backend-check backend-fix
+# ---- local services --------------------------------------------------------
+db: ## Start DynamoDB Local on :8001
+	docker compose up -d dynamodb
+
+db-create: ## Create the table in DynamoDB Local
+	cd backend && DYNAMODB_ENDPOINT_URL=http://localhost:8001 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local .venv/bin/python scripts/create_table.py
+
+db-down: ## Stop local services
+	docker compose down
+
+.PHONY: help backend-setup backend backend-check backend-fix db db-create db-down

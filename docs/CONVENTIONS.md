@@ -28,8 +28,10 @@ Scopes: `backend`, `frontend`, `infra`, `docs`, or omitted for repo-wide.
 ## Code
 
 - **Backend (Python):** `ruff` for lint and format, `mypy --strict`,
-  `pytest`. Type hints everywhere. Pydantic models at the API boundary,
-  plain dataclasses inside. No business logic in route handlers.
+  `pytest`. Type hints everywhere. Frozen Pydantic models for entities
+  (they cross both the API and storage boundaries); plain dataclasses
+  and functions for rules and computation. No business logic in route
+  handlers.
 - **Frontend (TypeScript):** `strict` compiler settings, ESLint, Prettier,
   Vitest. Components stay presentational; data access goes through the API
   client module.

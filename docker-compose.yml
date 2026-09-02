@@ -1,0 +1,12 @@
+# Local dependencies only. The app itself runs natively (see Makefile).
+services:
+  dynamodb:
+    image: amazon/dynamodb-local:2.5.2
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data"]
+    ports:
+      - "8001:8000"
+    volumes:
+      - dynamodb-data:/data
+
+volumes:
+  dynamodb-data:
