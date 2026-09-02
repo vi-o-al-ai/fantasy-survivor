@@ -32,7 +32,7 @@ npm-debug.log*
 *.tfstate.*
 *.tfvars
 !*.example.tfvars
-.terraform.lock.hcl
+infra/envs/*/backend.hcl
 crash.log
 *.tfplan
 

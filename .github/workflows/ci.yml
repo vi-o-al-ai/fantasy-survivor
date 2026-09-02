@@ -69,4 +69,24 @@ jobs:
       - run: mypy
       - run: pytest --cov
 
-  # Frontend and infra jobs are added in phases 7 and 6 (see docs/PLAN.md).
+  infra:
+    name: Infra
+    needs: changes
+    if: needs.changes.outputs.infra == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        root: [infra/bootstrap, infra/envs/dev]
+    defaults:
+      run:
+        working-directory: ${{ matrix.root }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - run: terraform fmt -check -recursive ../..
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
+
+  # Frontend job is added in phase 7 (see docs/PLAN.md).

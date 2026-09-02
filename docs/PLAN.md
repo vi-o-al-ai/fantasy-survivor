@@ -22,7 +22,7 @@ unchecked phase, do only that phase, tick it, stop.
   DynamoDB implementations. Scoring service with unit tests.
 - [x] **5. API endpoints.** Contestants, episode stat entry, user picks,
   leaderboard. OpenAPI spec committed as the client contract.
-- [ ] **6. Terraform (dev).** Modules for DynamoDB, Lambda + API Gateway,
+- [x] **6. Terraform (dev).** Modules for DynamoDB, Lambda + API Gateway,
   S3 + CloudFront. `dev` environment root, remote state, `fmt`/`validate`
   in CI.
 - [ ] **7. Frontend skeleton.** React + TypeScript + Vite, Auth0 login, API
@@ -51,3 +51,7 @@ unchecked phase, do only that phase, tick it, stop.
 - Phase 5 done. Permissions: `manage:seasons`, `write:stats`. Found and
   fixed a route-shadowing bug (`/seasons/scoring-rules` vs `/{season_id}`)
   via tests; static routes now live outside parameterised prefixes.
+- Phase 6 done. `terraform validate` passes for both roots (provider
+  5.100.0). Lambda zip builds at ~24 MB with cp312 x86_64 wheels; the
+  handler is unit-tested with an API Gateway v2 event. Not yet run:
+  `terraform plan/apply` against a real account (needs credentials).

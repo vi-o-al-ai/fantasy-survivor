@@ -22,6 +22,19 @@ backend-fix: ## Auto-fix lint and formatting
 openapi: ## Regenerate docs/openapi.json from the routes
 	cd backend && .venv/bin/python scripts/export_openapi.py
 
+# ---- deploy artefacts / infra ---------------------------------------------
+lambda-zip: ## Build backend/lambda.zip for Lambda
+	backend/scripts/build_lambda.sh
+
+tf-check: ## terraform fmt + validate on every root
+	terraform fmt -check -recursive infra
+	@for d in infra/bootstrap infra/envs/dev; do \
+	  (cd $$d && terraform init -backend=false -input=false >/dev/null && terraform validate) || exit 1; \
+	done
+
+tf-plan-dev: ## Plan the dev environment (needs AWS creds, backend.hcl, dev.tfvars)
+	cd infra/envs/dev && terraform init -backend-config=backend.hcl -input=false && terraform plan -var-file=dev.tfvars
+
 # ---- local services --------------------------------------------------------
 db: ## Start DynamoDB Local on :8001
 	docker compose up -d dynamodb
@@ -32,4 +45,4 @@ db-create: ## Create the table in DynamoDB Local
 db-down: ## Stop local services
 	docker compose down
 
-.PHONY: help backend-setup backend backend-check backend-fix openapi db db-create db-down
+.PHONY: help backend-setup backend backend-check backend-fix openapi lambda-zip tf-check tf-plan-dev db db-create db-down
