@@ -44,3 +44,6 @@ backend/.local/
 
 # Build artifacts
 backend/lambda.zip
+
+# TypeScript incremental build state
+*.tsbuildinfo
