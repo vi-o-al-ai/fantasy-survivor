@@ -34,7 +34,7 @@ unchecked phase, do only that phase, tick it, stop.
   invite with a join code, and set the league's own scoring rules on top
   of the canonical stats. Rosters belong to league members. Frontend:
   my leagues, create, join, league page with leaderboard and roster.
-- [ ] **10. Playwright end-to-end tests.** Browser tests for the main user
+- [x] **10. Playwright end-to-end tests.** Browser tests for the main user
   scenarios (new user creates a league, member joins and sets a roster,
   commissioner enters stats and the leaderboard updates, unauthenticated
   visitor is sent to login, non-member cannot see a league). Runs
@@ -77,3 +77,6 @@ unchecked phase, do only that phase, tick it, stop.
   0007). Error responses are now declared in the OpenAPI spec so the
   frontend's generated types carry `{detail}` on every route. Frontend
   gained a `useAsync` hook, league pages, roster editor, owner settings.
+- Phase 10 done. Six Playwright scenarios across four personas (ADR
+  0008). Local auth mode added for tests and no-Auth0 development. CI
+  job installs Chromium and uploads the report on failure.

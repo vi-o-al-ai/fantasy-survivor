@@ -2,10 +2,14 @@ import { Auth0Provider } from "@auth0/auth0-react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { config } from "@/config";
+import { LocalAuthProvider } from "./local";
 
-/** Wraps the app in Auth0 and returns users to where they were after login. */
+/** Wraps the app in Auth0 (or local auth in dev/test) and returns users to where they were. */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  if (config.authMode === "local") {
+    return <LocalAuthProvider>{children}</LocalAuthProvider>;
+  }
   return (
     <Auth0Provider
       domain={config.auth0.domain}

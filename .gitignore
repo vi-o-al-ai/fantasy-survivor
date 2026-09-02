@@ -47,3 +47,8 @@ backend/lambda.zip
 
 # TypeScript incremental build state
 *.tsbuildinfo
+
+# Playwright
+frontend/e2e/.tokens.json
+frontend/playwright-report/
+frontend/test-results/

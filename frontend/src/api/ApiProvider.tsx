@@ -1,12 +1,12 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo, type ReactNode } from "react";
+import { useAuth } from "@/auth/useAuth";
 import { config } from "@/config";
 import { createApiClient, type ApiClient } from "./client";
 import { ApiContext } from "./context";
 
 /** Provides one API client wired to Auth0 tokens. */
 export function ApiProvider({ children }: { children: ReactNode }) {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth();
   const client = useMemo(
     () => createApiClient(config.apiUrl, () => getAccessTokenSilently()),
     [getAccessTokenSilently],

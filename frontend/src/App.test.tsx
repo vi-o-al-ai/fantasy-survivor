@@ -1,6 +1,6 @@
 import type * as Auth0 from "@auth0/auth0-react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { render, screen } from "@testing-library/react";
+import { useAuth } from "@/auth/useAuth";
 import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { auth0State } from "@/test/auth0";
@@ -11,10 +11,10 @@ vi.mock("@auth0/auth0-react", async (importOriginal) => {
   return {
     ...actual,
     Auth0Provider: ({ children }: { children: ReactNode }) => <>{children}</>,
-    useAuth0: vi.fn(),
   };
 });
-const mockedUseAuth0 = vi.mocked(useAuth0);
+vi.mock("@/auth/useAuth");
+const mockedUseAuth0 = vi.mocked(useAuth);
 
 describe("App", () => {
   it("routes a logged-in user to the seasons page and calls the API", async () => {

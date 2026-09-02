@@ -11,11 +11,17 @@ export default defineConfig({
   server: {
     port: 5173,
     // Local dev talks to the backend through this proxy, so no CORS setup.
-    proxy: { "/api": { target: "http://localhost:8000", rewrite: (p) => p.replace(/^\/api/, "") } },
+    proxy: {
+      "/api": {
+        target: `http://localhost:${process.env.VITE_BACKEND_PORT ?? "8000"}`,
+        rewrite: (p) => p.replace(/^\/api/, ""),
+      },
+    },
   },
   test: {
     environment: "jsdom",
     globals: true,
+    include: ["src/**/*.test.{ts,tsx}"],
     setupFiles: ["src/test/setup.ts"],
     env: {
       VITE_AUTH0_DOMAIN: "test.auth0.local",

@@ -33,6 +33,9 @@ frontend: ## Run the web app on :5173 (proxies /api to :8000)
 frontend-check: ## Lint, format, typecheck, and test the frontend
 	cd frontend && npm run check
 
+e2e: ## Run Playwright scenarios against real backend + frontend
+	cd frontend && npm run e2e
+
 api-types: ## Regenerate frontend API types from docs/openapi.json
 	cd frontend && npm run api:types
 
@@ -61,4 +64,4 @@ db-create: ## Create the table in DynamoDB Local
 db-down: ## Stop local services
 	docker compose down
 
-.PHONY: help backend-setup backend backend-check backend-fix openapi frontend-setup frontend frontend-check api-types check lambda-zip tf-check tf-plan-dev db db-create db-down
+.PHONY: help backend-setup backend backend-check backend-fix openapi frontend-setup frontend frontend-check e2e api-types check lambda-zip tf-check tf-plan-dev db db-create db-down

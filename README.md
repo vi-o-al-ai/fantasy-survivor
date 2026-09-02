@@ -28,7 +28,8 @@ pip install pre-commit && pre-commit install
 make backend-setup frontend-setup
 make backend      # API on :8000 (in-memory store by default)
 make frontend     # web app on :5173, proxies /api to the backend
-make check        # everything CI runs
+make check        # unit checks CI runs
+make e2e          # Playwright scenarios (real backend + browser)
 ```
 
 Auth0 setup and the local, no-browser token flow are in

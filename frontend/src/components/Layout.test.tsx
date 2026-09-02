@@ -1,12 +1,12 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { render, screen } from "@testing-library/react";
+import { useAuth } from "@/auth/useAuth";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { auth0State } from "@/test/auth0";
 import { Layout } from "./Layout";
 
-vi.mock("@auth0/auth0-react");
-const mockedUseAuth0 = vi.mocked(useAuth0);
+vi.mock("@/auth/useAuth");
+const mockedUseAuth0 = vi.mocked(useAuth);
 
 function renderLayout() {
   return render(

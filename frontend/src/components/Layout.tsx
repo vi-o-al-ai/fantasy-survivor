@@ -1,8 +1,8 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Link, Outlet } from "react-router-dom";
+import { useAuth } from "@/auth/useAuth";
 
 export function Layout() {
-  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth();
   return (
     <div className="app">
       <header className="app-header">

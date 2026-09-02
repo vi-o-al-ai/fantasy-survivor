@@ -26,6 +26,30 @@ npm run check      # lint, format, typecheck, tests with coverage
 npm run build      # production bundle in dist/
 ```
 
+## Running without Auth0
+
+Set `VITE_AUTH_MODE=local` in `.env.local` (dev server only; production
+builds refuse it). The app then shows a `/local-login` page that accepts a
+token from `python scripts/mint_dev_token.py`, and the backend must run
+with `AUTH_LOCAL_JWKS_FILE=.local/dev-jwks.json`.
+
+## End-to-end tests
+
+Playwright drives the real backend (in-memory store, local signing keys)
+and the Vite dev server in local auth mode. Scenarios live in `e2e/`:
+anonymous redirect and return, logout, create/join/roster/score/re-score
+across two browser contexts, draft locking, league privacy, wrong join
+codes.
+
+```sh
+npm run e2e          # mints test tokens, starts both servers, runs headless
+npm run e2e:ui       # same, with the Playwright UI
+```
+
+The suite is serial and the backend keeps state for the whole run, so
+tests use unique league names and never assert on global emptiness for a
+shared persona.
+
 ## API types
 
 `src/api/schema.d.ts` is generated from the backend's OpenAPI spec and is

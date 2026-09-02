@@ -6,7 +6,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import prettier from "eslint-config-prettier";
 
 export default tseslint.config(
-  { ignores: ["dist", "coverage", "src/api/schema.d.ts"] },
+  { ignores: ["dist", "coverage", "src/api/schema.d.ts", "playwright-report", "test-results"] },
   js.configs.recommended,
   {
     files: ["**/*.{ts,tsx}"],
@@ -26,6 +26,14 @@ export default tseslint.config(
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "@typescript-eslint/no-unnecessary-condition": "off",
+    },
+  },
+  {
+    files: ["e2e/**"],
+    languageOptions: { globals: globals.node },
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-invalid-void-type": "off", // Playwright fixture convention
     },
   },
   {

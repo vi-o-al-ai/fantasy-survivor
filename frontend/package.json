@@ -10,11 +10,13 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc -b --noEmit",
+    "typecheck": "tsc -b --noEmit && tsc -p e2e/tsconfig.json",
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "api:types": "openapi-typescript ../docs/openapi.json -o src/api/schema.d.ts --default-non-nullable=false && prettier --write src/api/schema.d.ts",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test"
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test",
+    "e2e": "bash e2e/prepare.sh && playwright test",
+    "e2e:ui": "bash e2e/prepare.sh && playwright test --ui"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.24.1",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.62.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",

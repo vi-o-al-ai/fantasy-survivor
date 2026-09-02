@@ -1,11 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "./useAuth";
 
 /** Renders children only for a logged-in user; otherwise starts the login redirect. */
 export function RequireAuth({ children }: { children: ReactNode }) {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
