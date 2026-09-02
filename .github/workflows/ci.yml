@@ -48,6 +48,25 @@ jobs:
       - run: pip install pre-commit
       - run: pre-commit run --all-files --show-diff-on-failure
 
-  # Backend, frontend, and infra jobs are added in phases 2, 7, and 6
-  # respectively (see docs/PLAN.md). Each is gated on the matching
-  # `changes` output so unrelated edits stay fast.
+  backend:
+    name: Backend
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy
+      - run: pytest --cov
+
+  # Frontend and infra jobs are added in phases 7 and 6 (see docs/PLAN.md).

@@ -11,7 +11,7 @@ unchecked phase, do only that phase, tick it, stop.
 
 - [x] **1. Repo foundation.** Monorepo layout, `.gitignore`, `.editorconfig`,
   pre-commit, README, conventions, ADRs, CI skeleton, this plan.
-- [ ] **2. Backend skeleton.** FastAPI app with `/health`, settings from
+- [x] **2. Backend skeleton.** FastAPI app with `/health`, settings from
   environment, structured logging, `ruff` + `mypy --strict` + `pytest`
   configured, one passing test, CI job for the backend.
 - [ ] **3. Auth0 on the backend.** JWT verification against the Auth0 JWKS,
@@ -41,3 +41,5 @@ unchecked phase, do only that phase, tick it, stop.
 
 - Phase 1 done. Toolchains verified reachable from CI-like environment:
   pip, npm, and Terraform downloads all succeed.
+- Phase 2 done. `httpx2` is the test client dependency (Starlette 1.x
+  deprecates `httpx`). Coverage gate set at 90%. Root `Makefile` added.
