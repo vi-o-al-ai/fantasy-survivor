@@ -73,25 +73,31 @@ regenerate it after changing routes (a test fails if it is stale):
 python scripts/export_openapi.py
 ```
 
-| Method | Path                                                   | Permission       |
-| ------ | ------------------------------------------------------ | ---------------- |
-| GET    | `/me`                                                  |                  |
-| GET    | `/scoring-rules`                                       |                  |
-| GET    | `/seasons`, `/seasons/{id}`                            |                  |
-| PUT    | `/seasons/{id}`                                        | `manage:seasons` |
-| GET    | `/seasons/{id}/contestants`                            |                  |
-| PUT    | `/seasons/{id}/contestants/{cid}`                      | `manage:seasons` |
-| GET    | `/seasons/{id}/stats`, `.../episodes/{n}/stats`        |                  |
-| PUT    | `/seasons/{id}/episodes/{n}/stats/{cid}`               | `write:stats`    |
-| GET    | `/seasons/{id}/points`                                 |                  |
-| GET    | `/seasons/{id}/leaderboard`                            |                  |
-| GET    | `/seasons/{id}/rosters/me`                             |                  |
-| PUT    | `/seasons/{id}/rosters/me`                             |                  |
+| Method | Path                                             | Who                       |
+| ------ | ------------------------------------------------ | ------------------------- |
+| GET    | `/me`                                            | any user                  |
+| GET    | `/scoring-rules`                                 | any user (defaults)       |
+| GET    | `/seasons`, `/seasons/{id}`                      | any user                  |
+| PUT    | `/seasons/{id}`                                  | `manage:seasons`          |
+| GET    | `/seasons/{id}/contestants`                      | any user                  |
+| PUT    | `/seasons/{id}/contestants/{cid}`                | `manage:seasons`          |
+| GET    | `/seasons/{id}/stats`, `.../episodes/{n}/stats`  | any user                  |
+| PUT    | `/seasons/{id}/episodes/{n}/stats/{cid}`         | `write:stats`             |
+| GET    | `/seasons/{id}/points`                           | any user (default rules)  |
+| GET    | `/leagues`                                       | my leagues                |
+| POST   | `/leagues`                                       | any user (becomes owner)  |
+| GET    | `/leagues/{id}`, `.../members`, `.../leaderboard`, `.../scoring-rules` | members |
+| PATCH  | `/leagues/{id}`                                  | owner                     |
+| POST   | `/leagues/{id}/members`                          | anyone with the join code |
+| GET    | `/leagues/{id}/members/me`                       | member                    |
+| PUT    | `/leagues/{id}/members/me/roster`                | member, while draft open  |
 
 Ids are slugs (`s49`, `boston-rob`) chosen by the commissioner, so
 creates are `PUT` upserts. Errors: 401 no/invalid token, 403 missing
-permission, 404 unknown entity, 409 league rule broken (draft closed,
-wrong roster size, unknown contestant), 422 malformed body.
+permission or not a member, 404 unknown entity, 409 league rule broken
+(draft closed, wrong roster size, unknown contestant), 422 malformed body.
+Every error body is `{"detail": string}` and is declared in the spec so
+clients get typed errors.
 
 Layers: `routers/` (HTTP only) → `services/` (rules) → `storage/` (Store)
 and `domain/` (entities, scoring). Add rules to services, never routers.

@@ -5,6 +5,7 @@ from fastapi import APIRouter, Path, status
 from app.auth import CurrentUserDep
 from app.dependencies import LeagueDep
 from app.domain.models import League, LeagueMember, Slug
+from app.routers.common import ERROR_RESPONSES
 from app.schemas import (
     JoinLeagueIn,
     LeaderboardEntryOut,
@@ -15,7 +16,7 @@ from app.schemas import (
     ScoringRulesOut,
 )
 
-router = APIRouter(prefix="/leagues", tags=["leagues"])
+router = APIRouter(prefix="/leagues", tags=["leagues"], responses=ERROR_RESPONSES)
 
 LeagueId = Annotated[Slug, Path()]
 

@@ -2,8 +2,9 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app.auth import CurrentUserDep
+from app.routers.common import ERROR_RESPONSES
 
-router = APIRouter(tags=["me"])
+router = APIRouter(tags=["me"], responses=ERROR_RESPONSES)
 
 
 class MeResponse(BaseModel):

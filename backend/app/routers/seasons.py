@@ -6,9 +6,10 @@ from app.auth import CurrentUserDep, require_permission
 from app.dependencies import LeagueDep
 from app.domain.models import Contestant, Season, Slug
 from app.domain.scoring import DEFAULT_RULES
+from app.routers.common import ERROR_RESPONSES
 from app.schemas import ContestantIn, ContestantPointsOut, ScoringRulesOut, SeasonIn
 
-router = APIRouter(prefix="/seasons", tags=["seasons"])
+router = APIRouter(prefix="/seasons", tags=["seasons"], responses=ERROR_RESPONSES)
 
 MANAGE_SEASONS = "manage:seasons"
 ManageSeasons = Depends(require_permission(MANAGE_SEASONS))
@@ -61,7 +62,7 @@ def contestant_points(
     return ContestantPointsOut(points=league.canonical_points(season_id))
 
 
-scoring_router = APIRouter(tags=["scoring"])
+scoring_router = APIRouter(tags=["scoring"], responses=ERROR_RESPONSES)
 
 
 @scoring_router.get("/scoring-rules", response_model=ScoringRulesOut)

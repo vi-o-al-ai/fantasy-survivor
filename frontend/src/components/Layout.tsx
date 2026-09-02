@@ -12,6 +12,8 @@ export function Layout() {
         <nav>
           {isAuthenticated ? (
             <>
+              <Link to="/">Leagues</Link>
+              <Link to="/seasons">Seasons</Link>
               <span className="muted">{user?.name ?? user?.email}</span>
               <button
                 type="button"

@@ -30,7 +30,7 @@ unchecked phase, do only that phase, tick it, stop.
 - [x] **8. Deploy pipeline.** CI builds and deploys backend and frontend to
   dev on merge to `main`.
 
-- [ ] **9. User leagues.** Any user can create a league for a season,
+- [x] **9. User leagues.** Any user can create a league for a season,
   invite with a join code, and set the league's own scoring rules on top
   of the canonical stats. Rosters belong to league members. Frontend:
   my leagues, create, join, league page with leaderboard and roster.
@@ -73,3 +73,7 @@ unchecked phase, do only that phase, tick it, stop.
   bootstrap; no stored AWS keys. Not yet exercised against a real
   account: needs `infra/bootstrap` applied and the `dev` environment
   variables set (see infra/README.md). First real run will be the test.
+- Phase 9 done. Leagues layer scoring overrides over shared truth (ADR
+  0007). Error responses are now declared in the OpenAPI spec so the
+  frontend's generated types carry `{detail}` on every route. Frontend
+  gained a `useAsync` hook, league pages, roster editor, owner settings.

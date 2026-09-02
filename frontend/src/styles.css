@@ -49,3 +49,36 @@ td {
   padding: 0.5rem;
   border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
 }
+
+.forms {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  margin-top: 2rem;
+}
+form label {
+  display: block;
+  margin: 0.5rem 0;
+}
+form input:not([type="checkbox"]),
+form select {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  padding: 0.4rem;
+  margin-top: 0.2rem;
+}
+form input[type="number"] {
+  width: 5rem;
+  display: inline-block;
+}
+.picks {
+  list-style: none;
+  padding: 0;
+  columns: 2;
+}
+code {
+  padding: 0.1rem 0.3rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}

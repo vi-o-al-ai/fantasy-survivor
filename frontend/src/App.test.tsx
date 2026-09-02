@@ -32,9 +32,9 @@ describe("App", () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText(/No seasons yet/)).toBeInTheDocument();
+    expect(await screen.findByText(/not in any leagues yet/)).toBeInTheDocument();
     const request = fetchMock.mock.calls[0]![0] as Request;
-    expect(request.url).toBe("http://api.test/seasons");
+    expect(request.url).toBe("http://api.test/leagues");
     expect(request.headers.get("Authorization")).toBe("Bearer tok");
     vi.unstubAllGlobals();
   });

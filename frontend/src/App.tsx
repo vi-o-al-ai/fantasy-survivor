@@ -3,7 +3,8 @@ import { ApiProvider } from "@/api/ApiProvider";
 import { AuthProvider } from "@/auth/AuthProvider";
 import { RequireAuth } from "@/auth/RequireAuth";
 import { Layout } from "@/components/Layout";
-import { LeaderboardPage } from "@/pages/Leaderboard";
+import { LeaguePage } from "@/pages/League";
+import { LeaguesPage } from "@/pages/Leagues";
 import { SeasonsPage } from "@/pages/Seasons";
 
 export function App() {
@@ -16,15 +17,23 @@ export function App() {
               index
               element={
                 <RequireAuth>
-                  <SeasonsPage />
+                  <LeaguesPage />
                 </RequireAuth>
               }
             />
             <Route
-              path="/seasons/:seasonId"
+              path="/leagues/:leagueId"
               element={
                 <RequireAuth>
-                  <LeaderboardPage />
+                  <LeaguePage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/seasons"
+              element={
+                <RequireAuth>
+                  <SeasonsPage />
                 </RequireAuth>
               }
             />

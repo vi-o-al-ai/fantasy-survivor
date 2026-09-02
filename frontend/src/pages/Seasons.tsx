@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useApi } from "@/api/context";
 import { errorMessage } from "@/api/client";
 import type { components } from "@/api/schema";
@@ -30,11 +29,11 @@ export function SeasonsPage() {
   return (
     <section>
       <h1>Seasons</h1>
+      <p className="muted">Create a league from the home page to play a season.</p>
       <ul>
         {seasons.map((season) => (
           <li key={season.id}>
-            <Link to={`/seasons/${season.id}`}>{season.name}</Link>
-            {season.draft_open ? <span className="badge">draft open</span> : null}
+            {season.name} <span className="muted">({season.id})</span>
           </li>
         ))}
       </ul>

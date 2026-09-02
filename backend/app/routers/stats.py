@@ -5,9 +5,10 @@ from fastapi import APIRouter, Depends, Path
 from app.auth import CurrentUserDep, require_permission
 from app.dependencies import LeagueDep
 from app.domain.models import EpisodeStat, Slug
+from app.routers.common import ERROR_RESPONSES
 from app.schemas import EpisodeStatIn
 
-router = APIRouter(prefix="/seasons/{season_id}", tags=["stats"])
+router = APIRouter(prefix="/seasons/{season_id}", tags=["stats"], responses=ERROR_RESPONSES)
 
 WRITE_STATS = "write:stats"
 WriteStats = Depends(require_permission(WRITE_STATS))
