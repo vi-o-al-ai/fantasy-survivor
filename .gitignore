@@ -1,0 +1,45 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/coverage/
+npm-debug.log*
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.example.tfvars
+.terraform.lock.hcl
+crash.log
+*.tfplan
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+backend/lambda.zip
