@@ -21,13 +21,20 @@ for what is done and what is next.
 
 ## Getting started
 
-Each subproject has its own README with setup steps once that phase lands.
-Repo-wide tooling:
+Prerequisites: Python 3.12, Node 22, Docker (only for DynamoDB Local).
 
 ```sh
-pip install pre-commit
-pre-commit install
+pip install pre-commit && pre-commit install
+make backend-setup frontend-setup
+make backend      # API on :8000 (in-memory store by default)
+make frontend     # web app on :5173, proxies /api to the backend
+make check        # everything CI runs
 ```
+
+Auth0 setup and the local, no-browser token flow are in
+[`backend/README.md`](backend/README.md); Auth0 SPA settings are in
+[`frontend/README.md`](frontend/README.md). Deploying is in
+[`infra/README.md`](infra/README.md).
 
 ## Contributing
 

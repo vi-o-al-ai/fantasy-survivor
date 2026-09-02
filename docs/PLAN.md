@@ -25,7 +25,7 @@ unchecked phase, do only that phase, tick it, stop.
 - [x] **6. Terraform (dev).** Modules for DynamoDB, Lambda + API Gateway,
   S3 + CloudFront. `dev` environment root, remote state, `fmt`/`validate`
   in CI.
-- [ ] **7. Frontend skeleton.** React + TypeScript + Vite, Auth0 login, API
+- [x] **7. Frontend skeleton.** React + TypeScript + Vite, Auth0 login, API
   client that attaches the access token, leaderboard page, CI job.
 - [ ] **8. Deploy pipeline.** CI builds and deploys backend and frontend to
   dev on merge to `main`.
@@ -55,3 +55,7 @@ unchecked phase, do only that phase, tick it, stop.
   5.100.0). Lambda zip builds at ~24 MB with cp312 x86_64 wheels; the
   handler is unit-tested with an API Gateway v2 event. Not yet run:
   `terraform plan/apply` against a real account (needs credentials).
+- Phase 7 done. Typed client via openapi-typescript + openapi-fetch from
+  the committed spec; CI fails if the generated types drift. Pinned
+  TypeScript 5.9 (TS 7 is not yet supported by typescript-eslint).
+  Frontend coverage gate: 80% lines. Bundle ~136 kB gzipped.

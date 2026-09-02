@@ -22,6 +22,22 @@ backend-fix: ## Auto-fix lint and formatting
 openapi: ## Regenerate docs/openapi.json from the routes
 	cd backend && .venv/bin/python scripts/export_openapi.py
 
+# ---- frontend --------------------------------------------------------------
+frontend-setup: ## Install frontend deps
+	cd frontend && npm ci
+	@test -f frontend/.env.local || cp frontend/.env.example frontend/.env.local
+
+frontend: ## Run the web app on :5173 (proxies /api to :8000)
+	cd frontend && npm run dev
+
+frontend-check: ## Lint, format, typecheck, and test the frontend
+	cd frontend && npm run check
+
+api-types: ## Regenerate frontend API types from docs/openapi.json
+	cd frontend && npm run api:types
+
+check: backend-check frontend-check ## Run every local check
+
 # ---- deploy artefacts / infra ---------------------------------------------
 lambda-zip: ## Build backend/lambda.zip for Lambda
 	backend/scripts/build_lambda.sh
@@ -45,4 +61,4 @@ db-create: ## Create the table in DynamoDB Local
 db-down: ## Stop local services
 	docker compose down
 
-.PHONY: help backend-setup backend backend-check backend-fix openapi lambda-zip tf-check tf-plan-dev db db-create db-down
+.PHONY: help backend-setup backend backend-check backend-fix openapi frontend-setup frontend frontend-check api-types check lambda-zip tf-check tf-plan-dev db db-create db-down

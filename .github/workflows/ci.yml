@@ -89,4 +89,34 @@ jobs:
       - run: terraform init -backend=false -input=false
       - run: terraform validate
 
-  # Frontend job is added in phase 7 (see docs/PLAN.md).
+  frontend:
+    name: Frontend
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - name: API types match docs/openapi.json
+        run: |
+          npm run -s api:types
+          git diff --exit-code -- src/api/schema.d.ts || {
+            echo "::error::src/api/schema.d.ts is stale. Run 'make openapi' then 'npm run api:types' in frontend/."; exit 1; }
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run build
+        env:
+          VITE_AUTH0_DOMAIN: ci.invalid
+          VITE_AUTH0_CLIENT_ID: ci
+          VITE_AUTH0_AUDIENCE: https://api.ci.invalid
+          VITE_API_URL: https://api.ci.invalid
