@@ -39,6 +39,7 @@ crash.log
 # Local env / secrets
 .env
 .env.*
+backend/.local/
 !.env.example
 
 # Build artifacts

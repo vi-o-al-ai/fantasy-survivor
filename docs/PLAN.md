@@ -14,7 +14,7 @@ unchecked phase, do only that phase, tick it, stop.
 - [x] **2. Backend skeleton.** FastAPI app with `/health`, settings from
   environment, structured logging, `ruff` + `mypy --strict` + `pytest`
   configured, one passing test, CI job for the backend.
-- [ ] **3. Auth0 on the backend.** JWT verification against the Auth0 JWKS,
+- [x] **3. Auth0 on the backend.** JWT verification against the Auth0 JWKS,
   `get_current_user` dependency, `GET /me`, tests using a locally generated
   RSA key pair (no Auth0 account needed in CI).
 - [ ] **4. Domain and storage.** Models for season, contestant, episode,
@@ -43,3 +43,5 @@ unchecked phase, do only that phase, tick it, stop.
   pip, npm, and Terraform downloads all succeed.
 - Phase 2 done. `httpx2` is the test client dependency (Starlette 1.x
   deprecates `httpx`). Coverage gate set at 90%. Root `Makefile` added.
+- Phase 3 done. Verified locally: minted token → `/me` returns claims,
+  missing token → 401, unconfigured auth → 503. Only RS256 accepted.

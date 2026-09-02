@@ -5,6 +5,7 @@ the app should touch ``os.environ`` directly.
 """
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -20,6 +21,22 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     log_format: Literal["console", "json"] = "json"
     cors_origins: list[str] = []
+
+    # Auth0. Issuer and JWKS URL derive from the domain.
+    auth0_domain: str = ""
+    auth0_audience: str = ""
+    # Local-only escape hatch: verify tokens against a JWKS file on disk
+    # instead of Auth0. See scripts/mint_dev_token.py. Refused when deployed.
+    auth_local_jwks_file: Path | None = None
+    auth_local_issuer: str = "http://localhost/dev-issuer/"
+
+    @property
+    def auth0_issuer(self) -> str:
+        return f"https://{self.auth0_domain}/"
+
+    @property
+    def auth0_jwks_url(self) -> str:
+        return f"https://{self.auth0_domain}/.well-known/jwks.json"
 
     @property
     def is_deployed(self) -> bool:

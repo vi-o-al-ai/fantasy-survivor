@@ -38,3 +38,27 @@ Or from the repo root: `make backend-check`.
 | `app/logging.py` | JSON logging in AWS, console logging locally          |
 | `app/routers/`   | HTTP layer only. No business logic here.              |
 | `tests/`         | pytest; no network, no AWS                            |
+
+## Authentication
+
+Requests to protected routes carry an Auth0 access token as a bearer
+token. The API verifies the RS256 signature against the tenant's JWKS,
+checks issuer, audience, and expiry, and exposes the caller as
+`CurrentUser` (see `app/auth.py`). Permissions come from the token's
+`permissions` claim, so enable RBAC and "add permissions in the access
+token" on the Auth0 API.
+
+Set `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` in `.env`. Auth0 works locally.
+
+### Working on the API without a browser
+
+Mint a locally signed token and point the API at the matching JWKS:
+
+```sh
+python scripts/mint_dev_token.py --permission write:stats   # prints a token
+AUTH_LOCAL_JWKS_FILE=.local/dev-jwks.json uvicorn app.main:app --reload
+curl -H "Authorization: Bearer <token>" localhost:8000/me
+```
+
+The key pair lives in `backend/.local/` (git-ignored). This mode is refused
+when `APP_ENV` is `dev` or `prod`.
