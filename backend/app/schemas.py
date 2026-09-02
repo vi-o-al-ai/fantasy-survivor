@@ -16,11 +16,12 @@ class _In(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
+# --- truth ------------------------------------------------------------------
+
+
 class SeasonIn(_In):
     name: str = Field(min_length=1, max_length=100)
     number: PositiveInt
-    roster_size: PositiveInt = 3
-    draft_open: bool = True
 
 
 class ContestantIn(_In):
@@ -34,8 +35,52 @@ class EpisodeStatIn(_In):
     events: dict[EventType, NonNegativeInt] = Field(default_factory=dict)
 
 
-class RosterIn(_In):
+class ContestantPointsOut(BaseModel):
+    points: dict[str, int]
+
+
+class ScoringRulesOut(BaseModel):
+    points: dict[EventType, int]
+
+
+# --- leagues ----------------------------------------------------------------
+
+
+class LeagueCreateIn(_In):
+    season_id: Slug
+    name: str = Field(min_length=1, max_length=60)
+    display_name: str = Field(min_length=1, max_length=50, description="Owner's name in the league")
+    roster_size: PositiveInt = 3
+    scoring_overrides: dict[EventType, int] = Field(default_factory=dict)
+
+
+class LeagueUpdateIn(_In):
+    name: str | None = Field(default=None, min_length=1, max_length=60)
+    roster_size: PositiveInt | None = None
+    draft_open: bool | None = None
+    scoring_overrides: dict[EventType, int] | None = None
+
+
+class LeagueOut(BaseModel):
+    """A league as members see it. The join code is only shown to the owner."""
+
+    id: str
+    season_id: str
+    name: str
+    owner_id: str
+    roster_size: int
+    draft_open: bool
+    scoring_overrides: dict[EventType, int]
+    join_code: str | None = None
+    is_owner: bool
+
+
+class JoinLeagueIn(_In):
+    join_code: str = Field(min_length=1, max_length=16)
     display_name: str = Field(min_length=1, max_length=50)
+
+
+class RosterIn(_In):
     contestant_ids: list[Slug]
 
     @field_validator("contestant_ids")
@@ -52,11 +97,3 @@ class LeaderboardEntryOut(BaseModel):
     display_name: str
     points: int
     contestant_points: dict[str, int]
-
-
-class ContestantPointsOut(BaseModel):
-    points: dict[str, int]
-
-
-class ScoringRulesOut(BaseModel):
-    points: dict[EventType, int]

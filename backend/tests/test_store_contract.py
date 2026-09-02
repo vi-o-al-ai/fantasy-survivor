@@ -12,7 +12,7 @@ from app.storage.base import Store
 from app.storage.dynamodb import DynamoDBStore
 from app.storage.memory import MemoryStore
 from scripts.create_table import create_table
-from tests.factories import contestant, roster, season, stat
+from tests.factories import contestant, league, member, season, stat
 
 
 @pytest.fixture
@@ -88,28 +88,47 @@ def test_episode_stat_upsert_replaces_events(store: Store) -> None:
     assert stats[0] == stat("bob", 1, voted_out=1)
 
 
-def test_rosters(store: Store) -> None:
-    assert store.get_roster("s49", "auth0|u1") is None
+def test_leagues_and_members(store: Store) -> None:
+    assert store.get_league("lg-1") is None
+    assert store.list_league_ids_for_user("auth0|u1") == []
 
-    store.put_roster(roster("auth0|u2", "bob"))
-    store.put_roster(roster("auth0|u1", "amy", "bob"))
-    store.put_roster(roster("auth0|u1", "amy", season_id="s48"))
+    store.put_league(league("lg-1"))
+    store.put_league(league("lg-2", name="Other"))
+    store.put_member(member("auth0|u2", "bob"))
+    store.put_member(member("auth0|u1", "amy", "bob"))
+    store.put_member(member("auth0|u1", league_id="lg-2"))
 
-    assert [r.user_id for r in store.list_rosters("s49")] == ["auth0|u1", "auth0|u2"]
-    got = store.get_roster("s49", "auth0|u1")
-    assert got is not None and got.contestant_ids == ("amy", "bob")
+    got = store.get_league("lg-2")
+    assert got is not None and got.name == "Other"
+    assert [m.user_id for m in store.list_members("lg-1")] == ["auth0|u1", "auth0|u2"]
+    mine = store.get_member("lg-1", "auth0|u1")
+    assert mine is not None and mine.contestant_ids == ("amy", "bob")
+    assert store.get_member("lg-1", "auth0|zed") is None
+    assert store.list_league_ids_for_user("auth0|u1") == ["lg-1", "lg-2"]
+    assert store.list_league_ids_for_user("auth0|u2") == ["lg-1"]
+
+
+def test_member_put_is_upsert(store: Store) -> None:
+    store.put_member(member("auth0|u1"))
+    store.put_member(member("auth0|u1", "amy"))
+
+    assert len(store.list_members("lg-1")) == 1
+    assert store.list_league_ids_for_user("auth0|u1") == ["lg-1"]
 
 
 def test_dynamodb_key_layout(dynamodb_store: DynamoDBStore) -> None:
     """Pin the key scheme: it is the storage contract, changing it is a migration."""
     dynamodb_store.put_episode_stat(stat("bob", 7, survived_episode=1))
-    dynamodb_store.put_roster(roster("auth0|u1", "bob"))
     dynamodb_store.put_season(season("s49"))
+    dynamodb_store.put_league(league("lg-1"))
+    dynamodb_store.put_member(member("auth0|u1", "bob"))
 
     items = dynamodb_store._table.scan()["Items"]
     keys = sorted((str(i["PK"]), str(i["SK"])) for i in items)
     assert keys == [
-        ("SEASON#s49", "ROSTER#auth0|u1"),
+        ("LEAGUE#lg-1", "MEMBER#auth0|u1"),
+        ("LEAGUE#lg-1", "META"),
         ("SEASON#s49", "STAT#EP007#bob"),
         ("SEASONS", "SEASON#s49"),
+        ("USER#auth0|u1", "LEAGUE#lg-1"),
     ]

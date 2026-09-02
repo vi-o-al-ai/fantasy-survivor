@@ -57,8 +57,8 @@ def upsert_contestant(
 def contestant_points(
     season_id: SeasonId, _: CurrentUserDep, league: LeagueDep
 ) -> ContestantPointsOut:
-    """Total points per contestant so far this season."""
-    return ContestantPointsOut(points=league.contestant_points(season_id))
+    """Points per contestant under the default rules (the shared, canonical view)."""
+    return ContestantPointsOut(points=league.canonical_points(season_id))
 
 
 scoring_router = APIRouter(tags=["scoring"])

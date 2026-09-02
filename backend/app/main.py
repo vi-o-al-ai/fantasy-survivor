@@ -13,8 +13,8 @@ from fastapi.responses import JSONResponse
 from app.auth import build_verifier
 from app.config import Settings, get_settings
 from app.logging import configure_logging
-from app.routers import health, me, rosters, seasons, stats
-from app.services.errors import NotFoundError, RuleViolationError
+from app.routers import health, leagues, me, seasons, stats
+from app.services.errors import ForbiddenError, NotFoundError, RuleViolationError
 from app.storage.factory import build_store
 
 log = logging.getLogger(__name__)
@@ -47,9 +47,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(seasons.router)
     app.include_router(seasons.scoring_router)
     app.include_router(stats.router)
-    app.include_router(rosters.router)
+    app.include_router(leagues.router)
 
     app.add_exception_handler(NotFoundError, _not_found)
+    app.add_exception_handler(ForbiddenError, _forbidden)
     app.add_exception_handler(RuleViolationError, _rule_violation)
 
     log.info("app configured", extra={"env": settings.app_env})
@@ -58,6 +59,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
 def _not_found(_: Request, exc: Exception) -> JSONResponse:
     return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_404_NOT_FOUND)
+
+
+def _forbidden(_: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_403_FORBIDDEN)
 
 
 def _rule_violation(_: Request, exc: Exception) -> JSONResponse:

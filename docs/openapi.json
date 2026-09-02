@@ -234,6 +234,29 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "JoinLeagueIn": {
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "join_code": {
+            "maxLength": 16,
+            "minLength": 1,
+            "title": "Join Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "join_code",
+          "display_name"
+        ],
+        "title": "JoinLeagueIn",
+        "type": "object"
+      },
       "LeaderboardEntryOut": {
         "properties": {
           "contestant_points": {
@@ -271,6 +294,217 @@
         "title": "LeaderboardEntryOut",
         "type": "object"
       },
+      "LeagueCreateIn": {
+        "additionalProperties": false,
+        "properties": {
+          "display_name": {
+            "description": "Owner's name in the league",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "roster_size": {
+            "default": 3,
+            "exclusiveMinimum": 0.0,
+            "title": "Roster Size",
+            "type": "integer"
+          },
+          "scoring_overrides": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/EventType"
+            },
+            "title": "Scoring Overrides",
+            "type": "object"
+          },
+          "season_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Season Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "season_id",
+          "name",
+          "display_name"
+        ],
+        "title": "LeagueCreateIn",
+        "type": "object"
+      },
+      "LeagueMember": {
+        "additionalProperties": false,
+        "description": "One user's seat in a league: identity plus their roster.",
+        "properties": {
+          "contestant_ids": {
+            "default": [],
+            "items": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "type": "string"
+            },
+            "title": "Contestant Ids",
+            "type": "array"
+          },
+          "display_name": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "league_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "League Id",
+            "type": "string"
+          },
+          "user_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "league_id",
+          "user_id",
+          "display_name"
+        ],
+        "title": "LeagueMember",
+        "type": "object"
+      },
+      "LeagueOut": {
+        "description": "A league as members see it. The join code is only shown to the owner.",
+        "properties": {
+          "draft_open": {
+            "title": "Draft Open",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "is_owner": {
+            "title": "Is Owner",
+            "type": "boolean"
+          },
+          "join_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Join Code"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "owner_id": {
+            "title": "Owner Id",
+            "type": "string"
+          },
+          "roster_size": {
+            "title": "Roster Size",
+            "type": "integer"
+          },
+          "scoring_overrides": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/EventType"
+            },
+            "title": "Scoring Overrides",
+            "type": "object"
+          },
+          "season_id": {
+            "title": "Season Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "season_id",
+          "name",
+          "owner_id",
+          "roster_size",
+          "draft_open",
+          "scoring_overrides",
+          "is_owner"
+        ],
+        "title": "LeagueOut",
+        "type": "object"
+      },
+      "LeagueUpdateIn": {
+        "additionalProperties": false,
+        "properties": {
+          "draft_open": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft Open"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "roster_size": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roster Size"
+          },
+          "scoring_overrides": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "propertyNames": {
+                  "$ref": "#/components/schemas/EventType"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Overrides"
+          }
+        },
+        "title": "LeagueUpdateIn",
+        "type": "object"
+      },
       "MeResponse": {
         "properties": {
           "email": {
@@ -304,45 +538,6 @@
         "title": "MeResponse",
         "type": "object"
       },
-      "Roster": {
-        "additionalProperties": false,
-        "description": "A player's picks for a season. One roster per user per season.",
-        "properties": {
-          "contestant_ids": {
-            "items": {
-              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-              "type": "string"
-            },
-            "title": "Contestant Ids",
-            "type": "array"
-          },
-          "display_name": {
-            "maxLength": 50,
-            "minLength": 1,
-            "title": "Display Name",
-            "type": "string"
-          },
-          "season_id": {
-            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-            "title": "Season Id",
-            "type": "string"
-          },
-          "user_id": {
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "User Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "season_id",
-          "user_id",
-          "display_name",
-          "contestant_ids"
-        ],
-        "title": "Roster",
-        "type": "object"
-      },
       "RosterIn": {
         "additionalProperties": false,
         "properties": {
@@ -353,16 +548,9 @@
             },
             "title": "Contestant Ids",
             "type": "array"
-          },
-          "display_name": {
-            "maxLength": 50,
-            "minLength": 1,
-            "title": "Display Name",
-            "type": "string"
           }
         },
         "required": [
-          "display_name",
           "contestant_ids"
         ],
         "title": "RosterIn",
@@ -390,11 +578,6 @@
       "Season": {
         "additionalProperties": false,
         "properties": {
-          "draft_open": {
-            "default": true,
-            "title": "Draft Open",
-            "type": "boolean"
-          },
           "id": {
             "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
             "title": "Id",
@@ -410,12 +593,6 @@
             "exclusiveMinimum": 0.0,
             "title": "Number",
             "type": "integer"
-          },
-          "roster_size": {
-            "default": 3,
-            "exclusiveMinimum": 0.0,
-            "title": "Roster Size",
-            "type": "integer"
           }
         },
         "required": [
@@ -429,11 +606,6 @@
       "SeasonIn": {
         "additionalProperties": false,
         "properties": {
-          "draft_open": {
-            "default": true,
-            "title": "Draft Open",
-            "type": "boolean"
-          },
           "name": {
             "maxLength": 100,
             "minLength": 1,
@@ -443,12 +615,6 @@
           "number": {
             "exclusiveMinimum": 0.0,
             "title": "Number",
-            "type": "integer"
-          },
-          "roster_size": {
-            "default": 3,
-            "exclusiveMinimum": 0.0,
-            "title": "Roster Size",
             "type": "integer"
           }
         },
@@ -531,6 +697,498 @@
         "summary": "Health",
         "tags": [
           "health"
+        ]
+      }
+    },
+    "/leagues": {
+      "get": {
+        "operationId": "my_leagues_leagues_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LeagueOut"
+                  },
+                  "title": "Response My Leagues Leagues Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "My Leagues",
+        "tags": [
+          "leagues"
+        ]
+      },
+      "post": {
+        "operationId": "create_league_leagues_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeagueCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeagueOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create League",
+        "tags": [
+          "leagues"
+        ]
+      }
+    },
+    "/leagues/{league_id}": {
+      "get": {
+        "operationId": "get_league_leagues__league_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeagueOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get League",
+        "tags": [
+          "leagues"
+        ]
+      },
+      "patch": {
+        "operationId": "update_league_leagues__league_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeagueUpdateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeagueOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update League",
+        "tags": [
+          "leagues"
+        ]
+      }
+    },
+    "/leagues/{league_id}/leaderboard": {
+      "get": {
+        "operationId": "get_leaderboard_leagues__league_id__leaderboard_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LeaderboardEntryOut"
+                  },
+                  "title": "Response Get Leaderboard Leagues  League Id  Leaderboard Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Leaderboard",
+        "tags": [
+          "leagues"
+        ]
+      }
+    },
+    "/leagues/{league_id}/members": {
+      "get": {
+        "operationId": "list_members_leagues__league_id__members_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LeagueMember"
+                  },
+                  "title": "Response List Members Leagues  League Id  Members Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Members",
+        "tags": [
+          "leagues"
+        ]
+      },
+      "post": {
+        "operationId": "join_league_leagues__league_id__members_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinLeagueIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeagueMember"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Join League",
+        "tags": [
+          "leagues"
+        ]
+      }
+    },
+    "/leagues/{league_id}/members/me": {
+      "get": {
+        "operationId": "my_membership_leagues__league_id__members_me_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeagueMember"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "My Membership",
+        "tags": [
+          "leagues"
+        ]
+      }
+    },
+    "/leagues/{league_id}/members/me/roster": {
+      "put": {
+        "operationId": "set_my_roster_leagues__league_id__members_me_roster_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RosterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeagueMember"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set My Roster",
+        "tags": [
+          "leagues"
+        ]
+      }
+    },
+    "/leagues/{league_id}/scoring-rules": {
+      "get": {
+        "operationId": "league_scoring_rules_leagues__league_id__scoring_rules_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "league_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "League Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoringRulesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "League Scoring Rules",
+        "tags": [
+          "leagues"
         ]
       }
     },
@@ -980,61 +1638,9 @@
         ]
       }
     },
-    "/seasons/{season_id}/leaderboard": {
-      "get": {
-        "operationId": "get_leaderboard_seasons__season_id__leaderboard_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "season_id",
-            "required": true,
-            "schema": {
-              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-              "title": "Season Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/LeaderboardEntryOut"
-                  },
-                  "title": "Response Get Leaderboard Seasons  Season Id  Leaderboard Get",
-                  "type": "array"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get Leaderboard",
-        "tags": [
-          "rosters"
-        ]
-      }
-    },
     "/seasons/{season_id}/points": {
       "get": {
-        "description": "Total points per contestant so far this season.",
+        "description": "Points per contestant under the default rules (the shared, canonical view).",
         "operationId": "contestant_points_seasons__season_id__points_get",
         "parameters": [
           {
@@ -1078,110 +1684,6 @@
         "summary": "Contestant Points",
         "tags": [
           "seasons"
-        ]
-      }
-    },
-    "/seasons/{season_id}/rosters/me": {
-      "get": {
-        "operationId": "get_my_roster_seasons__season_id__rosters_me_get",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "season_id",
-            "required": true,
-            "schema": {
-              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-              "title": "Season Id",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Roster"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Get My Roster",
-        "tags": [
-          "rosters"
-        ]
-      },
-      "put": {
-        "operationId": "set_my_roster_seasons__season_id__rosters_me_put",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "season_id",
-            "required": true,
-            "schema": {
-              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
-              "title": "Season Id",
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RosterIn"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Roster"
-                }
-              }
-            },
-            "description": "Successful Response"
-          },
-          "422": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            },
-            "description": "Validation Error"
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "Set My Roster",
-        "tags": [
-          "rosters"
         ]
       }
     },

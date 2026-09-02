@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from app.domain.models import EpisodeStat, EventType, Roster, Season
-from tests.factories import roster, stat
+from app.domain.models import EpisodeStat, EventType, LeagueMember, Season
+from tests.factories import member, stat
 
 
 def test_slug_ids_are_validated() -> None:
@@ -12,7 +12,7 @@ def test_slug_ids_are_validated() -> None:
 
 def test_roster_contestants_must_be_unique() -> None:
     with pytest.raises(ValidationError, match="unique"):
-        roster("auth0|u1", "a", "a")
+        member("auth0|u1", "a", "a")
 
 
 def test_entities_are_frozen() -> None:
@@ -31,5 +31,5 @@ def test_stat_events_use_enum_keys_and_nonnegative_counts() -> None:
 
 
 def test_json_round_trip() -> None:
-    r = roster("auth0|u1", "a", "b")
-    assert Roster.model_validate(r.model_dump(mode="json")) == r
+    m = member("auth0|u1", "a", "b")
+    assert LeagueMember.model_validate(m.model_dump(mode="json")) == m

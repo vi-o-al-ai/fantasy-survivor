@@ -8,5 +8,9 @@ class NotFoundError(Exception):
         self.identifier = identifier
 
 
+class ForbiddenError(Exception):
+    """The caller is authenticated but not allowed to do this."""
+
+
 class RuleViolationError(Exception):
     """A request was well-formed but breaks a league rule (e.g. draft closed)."""

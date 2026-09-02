@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.domain.models import Contestant, EpisodeStat, Roster, Season
+from app.domain.models import Contestant, EpisodeStat, League, LeagueMember, Season
 
 
 class MemoryStore:
@@ -10,7 +10,8 @@ class MemoryStore:
         self._seasons: dict[str, Season] = {}
         self._contestants: dict[tuple[str, str], Contestant] = {}
         self._stats: dict[tuple[str, int, str], EpisodeStat] = {}
-        self._rosters: dict[tuple[str, str], Roster] = {}
+        self._leagues: dict[str, League] = {}
+        self._members: dict[tuple[str, str], LeagueMember] = {}
 
     def list_seasons(self) -> list[Season]:
         return sorted(self._seasons.values(), key=lambda s: s.id)
@@ -46,14 +47,23 @@ class MemoryStore:
     def put_episode_stat(self, stat: EpisodeStat) -> None:
         self._stats[(stat.season_id, stat.episode, stat.contestant_id)] = stat
 
-    def list_rosters(self, season_id: str) -> list[Roster]:
+    def get_league(self, league_id: str) -> League | None:
+        return self._leagues.get(league_id)
+
+    def put_league(self, league: League) -> None:
+        self._leagues[league.id] = league
+
+    def list_members(self, league_id: str) -> list[LeagueMember]:
         return sorted(
-            (r for (sid, _), r in self._rosters.items() if sid == season_id),
-            key=lambda r: r.user_id,
+            (m for (lid, _), m in self._members.items() if lid == league_id),
+            key=lambda m: m.user_id,
         )
 
-    def get_roster(self, season_id: str, user_id: str) -> Roster | None:
-        return self._rosters.get((season_id, user_id))
+    def get_member(self, league_id: str, user_id: str) -> LeagueMember | None:
+        return self._members.get((league_id, user_id))
 
-    def put_roster(self, roster: Roster) -> None:
-        self._rosters[(roster.season_id, roster.user_id)] = roster
+    def put_member(self, member: LeagueMember) -> None:
+        self._members[(member.league_id, member.user_id)] = member
+
+    def list_league_ids_for_user(self, user_id: str) -> list[str]:
+        return sorted(lid for (lid, uid) in self._members if uid == user_id)

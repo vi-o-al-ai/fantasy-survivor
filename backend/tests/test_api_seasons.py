@@ -27,8 +27,6 @@ def test_admin_creates_and_lists_seasons(
         "id": "s49",
         "name": "Survivor 49",
         "number": 49,
-        "roster_size": 3,
-        "draft_open": True,
     }
 
     listed = client.get("/seasons", headers=auth_headers)

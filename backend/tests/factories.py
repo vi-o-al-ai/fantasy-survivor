@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from app.domain.models import Contestant, EpisodeStat, EventType, Roster, Season
+from app.domain.models import Contestant, EpisodeStat, EventType, League, LeagueMember, Season
 
 
 def season(id: str = "s49", **overrides: object) -> Season:
@@ -29,12 +29,25 @@ def stat(
     )
 
 
-def roster(
-    user_id: str, *contestant_ids: str, season_id: str = "s49", **overrides: object
-) -> Roster:
-    return Roster.model_validate(
+def league(id: str = "lg-1", owner_id: str = "auth0|owner", **overrides: object) -> League:
+    return League.model_validate(
         {
-            "season_id": season_id,
+            "id": id,
+            "season_id": "s49",
+            "name": "Test League",
+            "owner_id": owner_id,
+            "join_code": "JOIN1234",
+            **overrides,
+        }
+    )
+
+
+def member(
+    user_id: str, *contestant_ids: str, league_id: str = "lg-1", **overrides: object
+) -> LeagueMember:
+    return LeagueMember.model_validate(
+        {
+            "league_id": league_id,
             "user_id": user_id,
             "display_name": user_id.split("|")[-1],
             "contestant_ids": contestant_ids,

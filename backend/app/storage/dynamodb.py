@@ -7,12 +7,16 @@ Key design (one table, ``PK``/``SK`` strings, no GSIs yet):
     Season        SEASONS            SEASON#<season_id>
     Contestant    SEASON#<sid>       CONTESTANT#<contestant_id>
     EpisodeStat   SEASON#<sid>       STAT#EP<episode:03d>#<contestant_id>
-    Roster        SEASON#<sid>       ROSTER#<user_id>
+    League        LEAGUE#<lid>       META
+    LeagueMember  LEAGUE#<lid>       MEMBER#<user_id>
+    (pointer)     USER#<user_id>     LEAGUE#<lid>
 
-Everything for a season shares one partition, so "load the season" is one
-query and per-type listings are ``begins_with`` on the sort key. Episode
-numbers are zero-padded so stats sort in air order. Entity fields are
-stored flat next to the keys, plus a ``type`` attribute for debugging.
+Everything for a season (or a league) shares one partition, so loading it
+is one query and per-type listings are ``begins_with`` on the sort key.
+Episode numbers are zero-padded so stats sort in air order. Entity fields
+are stored flat next to the keys, plus a ``type`` attribute for debugging.
+The pointer item under the user's partition answers "which leagues am I
+in?" without a GSI; it is written alongside every member put.
 """
 
 from __future__ import annotations
@@ -23,7 +27,7 @@ import boto3
 from boto3.dynamodb.conditions import Key
 from pydantic import BaseModel
 
-from app.domain.models import Contestant, EpisodeStat, Roster, Season
+from app.domain.models import Contestant, EpisodeStat, League, LeagueMember, Season
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb.service_resource import Table
@@ -43,6 +47,14 @@ ATTRIBUTE_DEFINITIONS: list[dict[str, str]] = [
 
 def season_pk(season_id: str) -> str:
     return f"SEASON#{season_id}"
+
+
+def league_pk(league_id: str) -> str:
+    return f"LEAGUE#{league_id}"
+
+
+def user_pk(user_id: str) -> str:
+    return f"USER#{user_id}"
 
 
 def stat_sk(episode: int, contestant_id: str) -> str:
@@ -114,16 +126,35 @@ class DynamoDBStore:
     def put_episode_stat(self, stat: EpisodeStat) -> None:
         self._put(season_pk(stat.season_id), stat_sk(stat.episode, stat.contestant_id), stat)
 
-    # --- rosters ----------------------------------------------------------
+    # --- leagues ----------------------------------------------------------
 
-    def list_rosters(self, season_id: str) -> list[Roster]:
-        return self._query(season_pk(season_id), "ROSTER#", Roster)
+    def get_league(self, league_id: str) -> League | None:
+        return self._get(league_pk(league_id), "META", League)
 
-    def get_roster(self, season_id: str, user_id: str) -> Roster | None:
-        return self._get(season_pk(season_id), f"ROSTER#{user_id}", Roster)
+    def put_league(self, league: League) -> None:
+        self._put(league_pk(league.id), "META", league)
 
-    def put_roster(self, roster: Roster) -> None:
-        self._put(season_pk(roster.season_id), f"ROSTER#{roster.user_id}", roster)
+    def list_members(self, league_id: str) -> list[LeagueMember]:
+        return self._query(league_pk(league_id), "MEMBER#", LeagueMember)
+
+    def get_member(self, league_id: str, user_id: str) -> LeagueMember | None:
+        return self._get(league_pk(league_id), f"MEMBER#{user_id}", LeagueMember)
+
+    def put_member(self, member: LeagueMember) -> None:
+        self._put(league_pk(member.league_id), f"MEMBER#{member.user_id}", member)
+        self._table.put_item(
+            Item={
+                "PK": user_pk(member.user_id),
+                "SK": f"LEAGUE#{member.league_id}",
+                "type": "LeaguePointer",
+                "league_id": member.league_id,
+            }
+        )
+
+    def list_league_ids_for_user(self, user_id: str) -> list[str]:
+        condition = Key("PK").eq(user_pk(user_id)) & Key("SK").begins_with("LEAGUE#")
+        response = self._table.query(KeyConditionExpression=condition)
+        return [str(item["league_id"]) for item in response.get("Items", [])]
 
 
 def _to_model(item: Any, model: type[M]) -> M:

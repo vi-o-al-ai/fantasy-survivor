@@ -3,6 +3,13 @@
 Pydantic models are used for entities because the same shape crosses the API
 boundary and gets serialised to storage; validation in one place beats three
 parallel class hierarchies while the domain is this small.
+
+Two kinds of data live here:
+
+* **Truth**: ``Season``, ``Contestant``, ``EpisodeStat``. Entered by the
+  commissioner, shared by every league for that season.
+* **Leagues**: ``League`` (user-created, with its own scoring rules) and
+  ``LeagueMember`` (a user's roster inside one league).
 """
 
 from __future__ import annotations
@@ -14,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field, NonNegativeInt, PositiveInt, 
 
 # Identifiers are URL-safe slugs chosen by an admin (e.g. "s49", "boston-rob").
 Slug = Annotated[str, Field(pattern=r"^[a-z0-9][a-z0-9-]{0,63}$")]
+UserId = Annotated[str, Field(min_length=1, max_length=200)]  # Auth0 ``sub``
 
 
 class EventType(StrEnum):
@@ -46,12 +54,13 @@ class _Entity(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
 
+# --- truth ------------------------------------------------------------------
+
+
 class Season(_Entity):
     id: Slug
     name: str = Field(min_length=1, max_length=100)
     number: PositiveInt
-    roster_size: PositiveInt = 3
-    draft_open: bool = True
 
 
 class Contestant(_Entity):
@@ -72,13 +81,30 @@ class EpisodeStat(_Entity):
     events: dict[EventType, NonNegativeInt] = Field(default_factory=dict)
 
 
-class Roster(_Entity):
-    """A player's picks for a season. One roster per user per season."""
+# --- leagues ----------------------------------------------------------------
 
+
+class League(_Entity):
+    """A user-run competition over one season's truth, with its own rules."""
+
+    id: Slug
     season_id: Slug
-    user_id: str = Field(min_length=1, max_length=200)  # Auth0 ``sub``
+    name: str = Field(min_length=1, max_length=60)
+    owner_id: UserId
+    join_code: str = Field(min_length=6, max_length=16)
+    roster_size: PositiveInt = 3
+    draft_open: bool = True
+    # Point values that differ from the defaults. Absent events use defaults.
+    scoring_overrides: dict[EventType, int] = Field(default_factory=dict)
+
+
+class LeagueMember(_Entity):
+    """One user's seat in a league: identity plus their roster."""
+
+    league_id: Slug
+    user_id: UserId
     display_name: str = Field(min_length=1, max_length=50)
-    contestant_ids: tuple[Slug, ...]
+    contestant_ids: tuple[Slug, ...] = ()
 
     @field_validator("contestant_ids")
     @classmethod

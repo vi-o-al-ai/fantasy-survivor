@@ -30,11 +30,21 @@ unchecked phase, do only that phase, tick it, stop.
 - [x] **8. Deploy pipeline.** CI builds and deploys backend and frontend to
   dev on merge to `main`.
 
+- [ ] **9. User leagues.** Any user can create a league for a season,
+  invite with a join code, and set the league's own scoring rules on top
+  of the canonical stats. Rosters belong to league members. Frontend:
+  my leagues, create, join, league page with leaderboard and roster.
+- [ ] **10. Playwright end-to-end tests.** Browser tests for the main user
+  scenarios (new user creates a league, member joins and sets a roster,
+  commissioner enters stats and the leaderboard updates, unauthenticated
+  visitor is sent to login, non-member cannot see a league). Runs
+  against the real backend in local-key auth mode; CI job.
+
 ## Later (not scheduled)
 
 - Mobile app (reuses the API from phases 3–5).
 - Admin UI for entering episode stats.
-- Multiple leagues per season, league invites.
+- Per-league overrides of recorded events (if wanted on top of rules).
 - Production environment and promotion flow.
 
 ## Status log

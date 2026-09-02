@@ -10,7 +10,7 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
 
-from app.domain.models import EpisodeStat, EventType, Roster
+from app.domain.models import EpisodeStat, EventType, LeagueMember
 
 DEFAULT_POINTS: Mapping[EventType, int] = MappingProxyType(
     {
@@ -38,6 +38,11 @@ DEFAULT_POINTS: Mapping[EventType, int] = MappingProxyType(
 class ScoringRules:
     points: Mapping[EventType, int] = field(default_factory=lambda: DEFAULT_POINTS)
 
+    @classmethod
+    def with_overrides(cls, overrides: Mapping[EventType, int]) -> ScoringRules:
+        """Defaults with a league's changes layered on top."""
+        return cls(points=MappingProxyType({**DEFAULT_POINTS, **overrides}))
+
     def score(self, events: Mapping[EventType, int]) -> int:
         return sum(self.points.get(event, 0) * count for event, count in events.items())
 
@@ -63,15 +68,17 @@ class LeaderboardEntry:
     contestant_points: Mapping[str, int] = field(default_factory=dict)
 
 
-def leaderboard(rosters: Iterable[Roster], totals: Mapping[str, int]) -> list[LeaderboardEntry]:
-    """Rank rosters by total points; ties broken by display name for stability."""
+def leaderboard(
+    members: Iterable[LeagueMember], totals: Mapping[str, int]
+) -> list[LeaderboardEntry]:
+    """Rank members by roster points; ties broken by display name for stability."""
     entries = []
-    for roster in rosters:
-        breakdown = {cid: totals.get(cid, 0) for cid in roster.contestant_ids}
+    for member in members:
+        breakdown = {cid: totals.get(cid, 0) for cid in member.contestant_ids}
         entries.append(
             LeaderboardEntry(
-                user_id=roster.user_id,
-                display_name=roster.display_name,
+                user_id=member.user_id,
+                display_name=member.display_name,
                 points=sum(breakdown.values()),
                 contestant_points=breakdown,
             )

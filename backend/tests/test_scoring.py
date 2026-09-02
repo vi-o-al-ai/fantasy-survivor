@@ -6,7 +6,7 @@ from app.domain.scoring import (
     contestant_totals,
     leaderboard,
 )
-from tests.factories import roster, stat
+from tests.factories import member, stat
 
 
 def test_every_event_type_has_default_points() -> None:
@@ -37,13 +37,13 @@ def test_contestant_totals_sum_across_episodes() -> None:
 
 def test_leaderboard_ranks_and_breaks_ties_by_name() -> None:
     totals = {"a": 10, "b": 5, "c": 5}
-    rosters = [
-        roster("auth0|zed", "b", "c", display_name="Zed"),
-        roster("auth0|amy", "a", "missing", display_name="Amy"),
-        roster("auth0|bob", "b", "c", display_name="bob"),
+    members = [
+        member("auth0|zed", "b", "c", display_name="Zed"),
+        member("auth0|amy", "a", "missing", display_name="Amy"),
+        member("auth0|bob", "b", "c", display_name="bob"),
     ]
 
-    board = leaderboard(rosters, totals)
+    board = leaderboard(members, totals)
 
     assert [(e.display_name, e.points) for e in board] == [("Amy", 10), ("bob", 10), ("Zed", 10)]
     assert board[0].contestant_points == {"a": 10, "missing": 0}
@@ -51,3 +51,19 @@ def test_leaderboard_ranks_and_breaks_ties_by_name() -> None:
 
 def test_leaderboard_empty() -> None:
     assert leaderboard([], {}) == []
+
+
+def test_member_without_roster_scores_zero() -> None:
+    board = leaderboard([member("auth0|new")], {"a": 10})
+    assert board[0].points == 0
+    assert board[0].contestant_points == {}
+
+
+def test_overrides_layer_on_defaults() -> None:
+    rules = ScoringRules.with_overrides({EventType.SOLE_SURVIVOR: 100, EventType.VOTED_OUT: 0})
+
+    assert rules.points[EventType.SOLE_SURVIVOR] == 100
+    assert rules.points[EventType.VOTED_OUT] == 0
+    assert (
+        rules.points[EventType.INDIVIDUAL_IMMUNITY] == DEFAULT_POINTS[EventType.INDIVIDUAL_IMMUNITY]
+    )
