@@ -1,0 +1,112 @@
+name: Deploy dev
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "infra/**"
+      - ".github/workflows/deploy-dev.yml"
+  workflow_dispatch:
+
+# One deploy at a time; never cancel a running apply.
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # OIDC token for AWS
+  contents: read
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+  TF_VERSION: "1.9.8"
+  TF_IN_AUTOMATION: "true"
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      url: ${{ steps.tf-out.outputs.web_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---- backend package -------------------------------------------------
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build Lambda package
+        run: backend/scripts/build_lambda.sh
+
+      # ---- infrastructure --------------------------------------------------
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+      - name: Terraform init
+        working-directory: infra/envs/dev
+        run: |
+          terraform init -input=false \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="dynamodb_table=${{ vars.TF_LOCK_TABLE }}" \
+            -backend-config="region=${{ env.AWS_REGION }}"
+      - name: Terraform apply
+        working-directory: infra/envs/dev
+        env:
+          TF_VAR_auth0_domain: ${{ vars.AUTH0_DOMAIN }}
+          TF_VAR_auth0_audience: ${{ vars.AUTH0_AUDIENCE }}
+          TF_VAR_region: ${{ env.AWS_REGION }}
+        run: terraform apply -input=false -auto-approve
+      - name: Read outputs
+        id: tf-out
+        working-directory: infra/envs/dev
+        run: |
+          {
+            echo "api_url=$(terraform output -raw api_url)"
+            echo "web_url=$(terraform output -raw web_url)"
+            echo "web_bucket=$(terraform output -raw web_bucket)"
+            echo "distribution_id=$(terraform output -raw web_distribution_id)"
+          } >> "$GITHUB_OUTPUT"
+
+      # ---- frontend --------------------------------------------------------
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_URL: ${{ steps.tf-out.outputs.api_url }}
+          VITE_AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+          VITE_AUTH0_CLIENT_ID: ${{ vars.AUTH0_SPA_CLIENT_ID }}
+          VITE_AUTH0_AUDIENCE: ${{ vars.AUTH0_AUDIENCE }}
+        run: |
+          npm ci
+          npm run build
+      - name: Upload frontend
+        working-directory: frontend
+        run: |
+          bucket="s3://${{ steps.tf-out.outputs.web_bucket }}"
+          # Hashed assets are immutable; cache them for a year.
+          aws s3 sync dist/assets "$bucket/assets" --delete \
+            --cache-control "public, max-age=31536000, immutable"
+          # Everything else (index.html) must always be revalidated.
+          aws s3 sync dist "$bucket" --delete --exclude "assets/*" \
+            --cache-control "no-cache"
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.tf-out.outputs.distribution_id }}" \
+            --paths "/index.html" "/" > /dev/null
+
+      - name: Smoke test
+        run: |
+          curl --fail --silent --show-error "${{ steps.tf-out.outputs.api_url }}/health"
+          echo
+          echo "web: ${{ steps.tf-out.outputs.web_url }}"

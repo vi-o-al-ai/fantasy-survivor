@@ -27,7 +27,7 @@ unchecked phase, do only that phase, tick it, stop.
   in CI.
 - [x] **7. Frontend skeleton.** React + TypeScript + Vite, Auth0 login, API
   client that attaches the access token, leaderboard page, CI job.
-- [ ] **8. Deploy pipeline.** CI builds and deploys backend and frontend to
+- [x] **8. Deploy pipeline.** CI builds and deploys backend and frontend to
   dev on merge to `main`.
 
 ## Later (not scheduled)
@@ -59,3 +59,7 @@ unchecked phase, do only that phase, tick it, stop.
   the committed spec; CI fails if the generated types drift. Pinned
   TypeScript 5.9 (TS 7 is not yet supported by typescript-eslint).
   Frontend coverage gate: 80% lines. Bundle ~136 kB gzipped.
+- Phase 8 done. Deploy workflow uses GitHub OIDC → IAM role from
+  bootstrap; no stored AWS keys. Not yet exercised against a real
+  account: needs `infra/bootstrap` applied and the `dev` environment
+  variables set (see infra/README.md). First real run will be the test.

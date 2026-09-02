@@ -9,3 +9,14 @@ variable "region" {
   type        = string
   default     = "us-east-1"
 }
+
+variable "github_repository" {
+  description = "GitHub repo allowed to assume the deploy role, as owner/name."
+  type        = string
+}
+
+variable "deploy_branches" {
+  description = "Branches whose workflows may deploy."
+  type        = list(string)
+  default     = ["main"]
+}
