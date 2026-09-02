@@ -62,3 +62,36 @@ curl -H "Authorization: Bearer <token>" localhost:8000/me
 
 The key pair lives in `backend/.local/` (git-ignored). This mode is refused
 when `APP_ENV` is `dev` or `prod`.
+
+## API
+
+All routes except `/health` require a bearer token. Writes need an Auth0
+permission on the token. The full contract is `docs/openapi.json`;
+regenerate it after changing routes (a test fails if it is stale):
+
+```sh
+python scripts/export_openapi.py
+```
+
+| Method | Path                                                   | Permission       |
+| ------ | ------------------------------------------------------ | ---------------- |
+| GET    | `/me`                                                  |                  |
+| GET    | `/scoring-rules`                                       |                  |
+| GET    | `/seasons`, `/seasons/{id}`                            |                  |
+| PUT    | `/seasons/{id}`                                        | `manage:seasons` |
+| GET    | `/seasons/{id}/contestants`                            |                  |
+| PUT    | `/seasons/{id}/contestants/{cid}`                      | `manage:seasons` |
+| GET    | `/seasons/{id}/stats`, `.../episodes/{n}/stats`        |                  |
+| PUT    | `/seasons/{id}/episodes/{n}/stats/{cid}`               | `write:stats`    |
+| GET    | `/seasons/{id}/points`                                 |                  |
+| GET    | `/seasons/{id}/leaderboard`                            |                  |
+| GET    | `/seasons/{id}/rosters/me`                             |                  |
+| PUT    | `/seasons/{id}/rosters/me`                             |                  |
+
+Ids are slugs (`s49`, `boston-rob`) chosen by the commissioner, so
+creates are `PUT` upserts. Errors: 401 no/invalid token, 403 missing
+permission, 404 unknown entity, 409 league rule broken (draft closed,
+wrong roster size, unknown contestant), 422 malformed body.
+
+Layers: `routers/` (HTTP only) → `services/` (rules) → `storage/` (Store)
+and `domain/` (entities, scoring). Add rules to services, never routers.

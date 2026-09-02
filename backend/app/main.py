@@ -6,13 +6,15 @@ with overrides; ``app`` at module level is what uvicorn and Lambda import.
 
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from app.auth import build_verifier
 from app.config import Settings, get_settings
 from app.logging import configure_logging
-from app.routers import health, me
+from app.routers import health, me, rosters, seasons, stats
+from app.services.errors import NotFoundError, RuleViolationError
 from app.storage.factory import build_store
 
 log = logging.getLogger(__name__)
@@ -42,9 +44,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(me.router)
+    app.include_router(seasons.router)
+    app.include_router(seasons.scoring_router)
+    app.include_router(stats.router)
+    app.include_router(rosters.router)
+
+    app.add_exception_handler(NotFoundError, _not_found)
+    app.add_exception_handler(RuleViolationError, _rule_violation)
 
     log.info("app configured", extra={"env": settings.app_env})
     return app
+
+
+def _not_found(_: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_404_NOT_FOUND)
+
+
+def _rule_violation(_: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse({"detail": str(exc)}, status_code=status.HTTP_409_CONFLICT)
 
 
 app = create_app()

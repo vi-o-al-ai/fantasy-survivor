@@ -1,0 +1,1241 @@
+{
+  "components": {
+    "schemas": {
+      "Contestant": {
+        "additionalProperties": false,
+        "properties": {
+          "eliminated_episode": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eliminated Episode"
+          },
+          "id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "season_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Season Id",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ContestantStatus",
+            "default": "active"
+          },
+          "tribe": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tribe"
+          }
+        },
+        "required": [
+          "id",
+          "season_id",
+          "name"
+        ],
+        "title": "Contestant",
+        "type": "object"
+      },
+      "ContestantIn": {
+        "additionalProperties": false,
+        "properties": {
+          "eliminated_episode": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eliminated Episode"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ContestantStatus",
+            "default": "active"
+          },
+          "tribe": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tribe"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ContestantIn",
+        "type": "object"
+      },
+      "ContestantPointsOut": {
+        "properties": {
+          "points": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Points",
+            "type": "object"
+          }
+        },
+        "required": [
+          "points"
+        ],
+        "title": "ContestantPointsOut",
+        "type": "object"
+      },
+      "ContestantStatus": {
+        "enum": [
+          "active",
+          "eliminated"
+        ],
+        "title": "ContestantStatus",
+        "type": "string"
+      },
+      "EpisodeStat": {
+        "additionalProperties": false,
+        "description": "Event counts for one contestant in one episode. One record per pair.",
+        "properties": {
+          "contestant_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Contestant Id",
+            "type": "string"
+          },
+          "episode": {
+            "exclusiveMinimum": 0.0,
+            "title": "Episode",
+            "type": "integer"
+          },
+          "events": {
+            "additionalProperties": {
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/EventType"
+            },
+            "title": "Events",
+            "type": "object"
+          },
+          "season_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Season Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "season_id",
+          "episode",
+          "contestant_id"
+        ],
+        "title": "EpisodeStat",
+        "type": "object"
+      },
+      "EpisodeStatIn": {
+        "additionalProperties": false,
+        "properties": {
+          "events": {
+            "additionalProperties": {
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/EventType"
+            },
+            "title": "Events",
+            "type": "object"
+          }
+        },
+        "title": "EpisodeStatIn",
+        "type": "object"
+      },
+      "EventType": {
+        "description": "Things that happen to a castaway in an episode and earn (or cost) points.",
+        "enum": [
+          "survived_episode",
+          "individual_immunity",
+          "team_immunity",
+          "individual_reward",
+          "team_reward",
+          "idol_found",
+          "idol_played_successfully",
+          "advantage_found",
+          "correct_vote",
+          "vote_received",
+          "fire_making_win",
+          "voted_out",
+          "quit_or_medevac",
+          "final_three",
+          "jury_vote_received",
+          "sole_survivor"
+        ],
+        "title": "EventType",
+        "type": "string"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "env": {
+            "title": "Env",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "env"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "LeaderboardEntryOut": {
+        "properties": {
+          "contestant_points": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Contestant Points",
+            "type": "object"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "points": {
+            "title": "Points",
+            "type": "integer"
+          },
+          "rank": {
+            "exclusiveMinimum": 0.0,
+            "title": "Rank",
+            "type": "integer"
+          },
+          "user_id": {
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rank",
+          "user_id",
+          "display_name",
+          "points",
+          "contestant_points"
+        ],
+        "title": "LeaderboardEntryOut",
+        "type": "object"
+      },
+      "MeResponse": {
+        "properties": {
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Permissions",
+            "type": "array"
+          },
+          "sub": {
+            "title": "Sub",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sub",
+          "email",
+          "permissions"
+        ],
+        "title": "MeResponse",
+        "type": "object"
+      },
+      "Roster": {
+        "additionalProperties": false,
+        "description": "A player's picks for a season. One roster per user per season.",
+        "properties": {
+          "contestant_ids": {
+            "items": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "type": "string"
+            },
+            "title": "Contestant Ids",
+            "type": "array"
+          },
+          "display_name": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "season_id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Season Id",
+            "type": "string"
+          },
+          "user_id": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "User Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "season_id",
+          "user_id",
+          "display_name",
+          "contestant_ids"
+        ],
+        "title": "Roster",
+        "type": "object"
+      },
+      "RosterIn": {
+        "additionalProperties": false,
+        "properties": {
+          "contestant_ids": {
+            "items": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "type": "string"
+            },
+            "title": "Contestant Ids",
+            "type": "array"
+          },
+          "display_name": {
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "display_name",
+          "contestant_ids"
+        ],
+        "title": "RosterIn",
+        "type": "object"
+      },
+      "ScoringRulesOut": {
+        "properties": {
+          "points": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/EventType"
+            },
+            "title": "Points",
+            "type": "object"
+          }
+        },
+        "required": [
+          "points"
+        ],
+        "title": "ScoringRulesOut",
+        "type": "object"
+      },
+      "Season": {
+        "additionalProperties": false,
+        "properties": {
+          "draft_open": {
+            "default": true,
+            "title": "Draft Open",
+            "type": "boolean"
+          },
+          "id": {
+            "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "number": {
+            "exclusiveMinimum": 0.0,
+            "title": "Number",
+            "type": "integer"
+          },
+          "roster_size": {
+            "default": 3,
+            "exclusiveMinimum": 0.0,
+            "title": "Roster Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "number"
+        ],
+        "title": "Season",
+        "type": "object"
+      },
+      "SeasonIn": {
+        "additionalProperties": false,
+        "properties": {
+          "draft_open": {
+            "default": true,
+            "title": "Draft Open",
+            "type": "boolean"
+          },
+          "name": {
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "number": {
+            "exclusiveMinimum": 0.0,
+            "title": "Number",
+            "type": "integer"
+          },
+          "roster_size": {
+            "default": 3,
+            "exclusiveMinimum": 0.0,
+            "title": "Roster Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "number"
+        ],
+        "title": "SeasonIn",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "fantasy-survivor-api",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/me": {
+      "get": {
+        "operationId": "me_me_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Me",
+        "tags": [
+          "me"
+        ]
+      }
+    },
+    "/scoring-rules": {
+      "get": {
+        "operationId": "scoring_rules_scoring_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoringRulesOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Scoring Rules",
+        "tags": [
+          "scoring"
+        ]
+      }
+    },
+    "/seasons": {
+      "get": {
+        "operationId": "list_seasons_seasons_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Season"
+                  },
+                  "title": "Response List Seasons Seasons Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Seasons",
+        "tags": [
+          "seasons"
+        ]
+      }
+    },
+    "/seasons/{season_id}": {
+      "get": {
+        "operationId": "get_season_seasons__season_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Season"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Season",
+        "tags": [
+          "seasons"
+        ]
+      },
+      "put": {
+        "operationId": "upsert_season_seasons__season_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeasonIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Season"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Upsert Season",
+        "tags": [
+          "seasons"
+        ]
+      }
+    },
+    "/seasons/{season_id}/contestants": {
+      "get": {
+        "operationId": "list_contestants_seasons__season_id__contestants_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Contestant"
+                  },
+                  "title": "Response List Contestants Seasons  Season Id  Contestants Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Contestants",
+        "tags": [
+          "seasons"
+        ]
+      }
+    },
+    "/seasons/{season_id}/contestants/{contestant_id}": {
+      "put": {
+        "operationId": "upsert_contestant_seasons__season_id__contestants__contestant_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "contestant_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Contestant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContestantIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Contestant"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Upsert Contestant",
+        "tags": [
+          "seasons"
+        ]
+      }
+    },
+    "/seasons/{season_id}/episodes/{episode}/stats": {
+      "get": {
+        "operationId": "list_episode_stats_seasons__season_id__episodes__episode__stats_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "episode",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "Episode",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EpisodeStat"
+                  },
+                  "title": "Response List Episode Stats Seasons  Season Id  Episodes  Episode  Stats Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Episode Stats",
+        "tags": [
+          "stats"
+        ]
+      }
+    },
+    "/seasons/{season_id}/episodes/{episode}/stats/{contestant_id}": {
+      "put": {
+        "operationId": "record_stat_seasons__season_id__episodes__episode__stats__contestant_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "episode",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "Episode",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "contestant_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Contestant Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EpisodeStatIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodeStat"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Record Stat",
+        "tags": [
+          "stats"
+        ]
+      }
+    },
+    "/seasons/{season_id}/leaderboard": {
+      "get": {
+        "operationId": "get_leaderboard_seasons__season_id__leaderboard_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LeaderboardEntryOut"
+                  },
+                  "title": "Response Get Leaderboard Seasons  Season Id  Leaderboard Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Leaderboard",
+        "tags": [
+          "rosters"
+        ]
+      }
+    },
+    "/seasons/{season_id}/points": {
+      "get": {
+        "description": "Total points per contestant so far this season.",
+        "operationId": "contestant_points_seasons__season_id__points_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContestantPointsOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Contestant Points",
+        "tags": [
+          "seasons"
+        ]
+      }
+    },
+    "/seasons/{season_id}/rosters/me": {
+      "get": {
+        "operationId": "get_my_roster_seasons__season_id__rosters_me_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Roster"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get My Roster",
+        "tags": [
+          "rosters"
+        ]
+      },
+      "put": {
+        "operationId": "set_my_roster_seasons__season_id__rosters_me_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RosterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Roster"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set My Roster",
+        "tags": [
+          "rosters"
+        ]
+      }
+    },
+    "/seasons/{season_id}/stats": {
+      "get": {
+        "operationId": "list_season_stats_seasons__season_id__stats_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+              "title": "Season Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EpisodeStat"
+                  },
+                  "title": "Response List Season Stats Seasons  Season Id  Stats Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Season Stats",
+        "tags": [
+          "stats"
+        ]
+      }
+    }
+  }
+}

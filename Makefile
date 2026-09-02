@@ -19,6 +19,9 @@ backend-check: ## Lint, type-check, and test the backend
 backend-fix: ## Auto-fix lint and formatting
 	cd backend && .venv/bin/ruff check --fix . && .venv/bin/ruff format .
 
+openapi: ## Regenerate docs/openapi.json from the routes
+	cd backend && .venv/bin/python scripts/export_openapi.py
+
 # ---- local services --------------------------------------------------------
 db: ## Start DynamoDB Local on :8001
 	docker compose up -d dynamodb
@@ -29,4 +32,4 @@ db-create: ## Create the table in DynamoDB Local
 db-down: ## Stop local services
 	docker compose down
 
-.PHONY: help backend-setup backend backend-check backend-fix db db-create db-down
+.PHONY: help backend-setup backend backend-check backend-fix openapi db db-create db-down

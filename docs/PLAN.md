@@ -20,7 +20,7 @@ unchecked phase, do only that phase, tick it, stop.
 - [x] **4. Domain and storage.** Models for season, contestant, episode,
   episode stats, and user roster. Repository interface with in-memory and
   DynamoDB implementations. Scoring service with unit tests.
-- [ ] **5. API endpoints.** Contestants, episode stat entry, user picks,
+- [x] **5. API endpoints.** Contestants, episode stat entry, user picks,
   leaderboard. OpenAPI spec committed as the client contract.
 - [ ] **6. Terraform (dev).** Modules for DynamoDB, Lambda + API Gateway,
   S3 + CloudFront. `dev` environment root, remote state, `fmt`/`validate`
@@ -48,3 +48,6 @@ unchecked phase, do only that phase, tick it, stop.
 - Phase 4 done. Store contract tests run against memory and DynamoDB
   (moto). Docker Compose + `make db db-create` for DynamoDB Local.
   Deferred: conditional writes, GSIs, per-season scoring overrides.
+- Phase 5 done. Permissions: `manage:seasons`, `write:stats`. Found and
+  fixed a route-shadowing bug (`/seasons/scoring-rules` vs `/{season_id}`)
+  via tests; static routes now live outside parameterised prefixes.
